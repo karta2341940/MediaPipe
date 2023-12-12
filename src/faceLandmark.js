@@ -10,9 +10,6 @@
 // limitations under the License.
 import { FaceLandmarker, FilesetResolver, DrawingUtils } from "@mediapipe/tasks-vision";
 
-const demosSection = document.getElementById("demos");
-const imageBlendShapes = document.getElementById("image-blend-shapes");
-const videoBlendShapes = document.getElementById("video-blend-shapes");
 let faceLandmarker;
 let runningMode = "VIDEO";
 let enableWebcamButton;
@@ -36,7 +33,7 @@ async function createFaceLandmarker() {
 }
 createFaceLandmarker();
 
-const video = document.querySelector(".video2");
+const video = document.querySelector("video");
 const canvasElement = document.querySelector(".canvas2");
 const canvasCtx = canvasElement.getContext("2d");
 

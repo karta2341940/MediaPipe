@@ -1,6 +1,6 @@
 .identify_div {
-    width: fit-content;
-
+    display: flex;
+    position: relative;
     video {
         position: relative;
         width: 360px;
@@ -25,36 +25,16 @@
         z-index: 6;
     }
 
-}
-
-.row {
-    display: flex;
-    position: relative;
-}
-
-.identify_div2 {
-    width: 45vw;
-    position: relative;
-
-    video {
-        position: relative;
-
-        clear: both;
-        display: block;
-        transform: rotateY(180deg);
-        -webkit-transform: rotateY(180deg);
-        -moz-transform: rotateY(180deg);
-        z-index: 2;
-    }
-
-    canvas {
+    .canvas2 {
         position: absolute;
         top: 0px;
         left: 0px;
-
+        width: 360px;
+        height: 480px;
         transform: rotateY(180deg);
         -webkit-transform: rotateY(180deg);
         -moz-transform: rotateY(180deg);
-        z-index: 6;
+        z-index: 10;
     }
 }
+
