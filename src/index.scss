@@ -1,0 +1,37 @@
+.identify_div {
+    position: relative;
+    width: 48%;
+
+    video {
+        position: absolute;
+        width: 1280px;
+        height: 720px;
+        clear: both;
+        display: block;
+        transform: rotateY(180deg);
+        -webkit-transform: rotateY(180deg);
+        -moz-transform: rotateY(180deg);
+    }
+
+    canvas {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 1280px;
+        height: 720px;
+        transform: rotateY(180deg);
+        -webkit-transform: rotateY(180deg);
+        -moz-transform: rotateY(180deg);
+    }
+
+    p {
+        position: absolute;
+        padding: 5px;
+        background-color: #007f8b;
+        color: #fff;
+        border: 1px dashed rgba(255, 255, 255, 0.7);
+        z-index: 2;
+        font-size: 12px;
+        margin: 0;
+    }
+}
