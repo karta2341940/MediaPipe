@@ -1,37 +1,60 @@
 .identify_div {
-    position: relative;
-    width: 48%;
+    width: fit-content;
 
     video {
-        position: absolute;
-        width: 1280px;
-        height: 720px;
+        position: relative;
+        width: 360px;
+        height: 480px;
         clear: both;
         display: block;
         transform: rotateY(180deg);
         -webkit-transform: rotateY(180deg);
         -moz-transform: rotateY(180deg);
+        z-index: 1;
     }
 
     canvas {
         position: absolute;
         top: 0px;
         left: 0px;
-        width: 1280px;
-        height: 720px;
+        width: 360px;
+        height: 480px;
         transform: rotateY(180deg);
         -webkit-transform: rotateY(180deg);
         -moz-transform: rotateY(180deg);
+        z-index: 6;
     }
 
-    p {
-        position: absolute;
-        padding: 5px;
-        background-color: #007f8b;
-        color: #fff;
-        border: 1px dashed rgba(255, 255, 255, 0.7);
+}
+
+.row {
+    display: flex;
+    position: relative;
+}
+
+.identify_div2 {
+    width: 45vw;
+    position: relative;
+
+    video {
+        position: relative;
+
+        clear: both;
+        display: block;
+        transform: rotateY(180deg);
+        -webkit-transform: rotateY(180deg);
+        -moz-transform: rotateY(180deg);
         z-index: 2;
-        font-size: 12px;
-        margin: 0;
+    }
+
+    canvas {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+
+        transform: rotateY(180deg);
+        -webkit-transform: rotateY(180deg);
+        -moz-transform: rotateY(180deg);
+        z-index: 6;
     }
 }

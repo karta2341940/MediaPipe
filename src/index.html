@@ -6,15 +6,22 @@
             rel="stylesheet">
         <script
             src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+        <script type="module" src="./index.js"></script>
+        <script type="module" src="./faceLandmark.js"></script>
     </head>
     <body>
         Hello
         <br>
-        <script type="module" src="./index.js"></script>
         <button>Enable Camera</button>
-        <div class="identify_div">
-            <video autoplay playsinline></video>
-            <canvas></canvas>
+        <div class="row">
+            <div class="identify_div">
+                <video autoplay playsinline></video>
+                <canvas></canvas>
+            </div>
+            <div class="identify_div2">
+                <video class="video2" autoplay playsinline></video>
+                <canvas class="canvas2"></canvas>
+            </div>
         </div>
     </body>
 </html>
