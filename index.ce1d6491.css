@@ -1,0 +1,52 @@
+.identify_div {
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+.identify_div video {
+  clear: both;
+  z-index: 1;
+  width: 360px;
+  height: 480px;
+  display: block;
+  position: relative;
+  transform: rotateY(180deg);
+}
+
+.identify_div canvas {
+  z-index: 6;
+  width: 360px;
+  height: 480px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: rotateY(180deg);
+}
+
+.row {
+  display: flex;
+  position: relative;
+}
+
+.identify_div2 {
+  width: 45vw;
+  position: relative;
+}
+
+.identify_div2 video {
+  clear: both;
+  z-index: 2;
+  display: block;
+  position: relative;
+  transform: rotateY(180deg);
+}
+
+.identify_div2 canvas {
+  z-index: 6;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: rotateY(180deg);
+}
+
+/*# sourceMappingURL=index.ce1d6491.css.map */
