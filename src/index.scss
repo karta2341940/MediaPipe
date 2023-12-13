@@ -3,8 +3,8 @@
     position: relative;
     video {
         position: relative;
-        width: 360px;
-        height: 480px;
+        // width: 360px;
+        // height: 480px;
         clear: both;
         display: block;
         transform: rotateY(180deg);
@@ -17,8 +17,8 @@
         position: absolute;
         top: 0px;
         left: 0px;
-        width: 360px;
-        height: 480px;
+        // width: 360px;
+        // height: 480px;
         transform: rotateY(180deg);
         -webkit-transform: rotateY(180deg);
         -moz-transform: rotateY(180deg);
@@ -29,12 +29,12 @@
         position: absolute;
         top: 0px;
         left: 0px;
-        width: 360px;
-        height: 480px;
+        // width: 360px;
+        // height: 480px;
         transform: rotateY(180deg);
         -webkit-transform: rotateY(180deg);
         -moz-transform: rotateY(180deg);
-        z-index: 10;
+        z-index: 7;
     }
 }
 
