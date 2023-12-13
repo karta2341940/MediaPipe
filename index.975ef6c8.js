@@ -598,7 +598,7 @@ const hasGetUserMedia = ()=>{
     return !!((mediaDevices = navigator.mediaDevices) === null || mediaDevices === void 0 ? void 0 : mediaDevices.getUserMedia);
 };
 if (hasGetUserMedia()) {
-    enableWebcamButton = document.querySelector("button");
+    let enableWebcamButton = document.querySelector("button");
     enableWebcamButton.addEventListener("click", enableCam);
 }
 function enableCam(event) {
