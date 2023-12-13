@@ -26,13 +26,13 @@ const hasGetUserMedia = () => {
     return !!((mediaDevices = navigator.mediaDevices) === null || mediaDevices === void 0 ? void 0 : mediaDevices.getUserMedia);
 };
 if (hasGetUserMedia()) {
-    enableWebcamButton = document.querySelector("button");
+    let enableWebcamButton = document.querySelector("button");
     enableWebcamButton.addEventListener("click", enableCam);
 }
 function enableCam(event) {
     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
         video.srcObject = stream;
-        video.addEventListener("loadeddata", predict_from_webcam);
+        video.addEventListener("loadeddata", predictBone);
     })
     console.log("enableCam")
 }
@@ -57,7 +57,7 @@ async function initPoseLandMaker() {
 /**
  * 人體骨架辨識
  */
-async function predict_from_webcam() {
+async function predictBone() {
     canvas.style.height = videoHeight;
     canvas.style.width = videoWidth;
     video.style.height = videoHeight;
@@ -75,13 +75,15 @@ async function predict_from_webcam() {
             canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
             for (const landmark of result.landmarks) {
                 drawingUtils.drawLandmarks(landmark, {
-                    radius: (data) => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1)
+                    radius: (data) => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1),
+                    lineWidth: 1,
                 });
                 drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
             }
             canvasCtx.restore();
         })
     }
-    window.requestAnimationFrame(predict_from_webcam);
+    window.requestAnimationFrame(predictBone);
 }
+
 

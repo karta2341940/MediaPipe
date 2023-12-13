@@ -51,14 +51,14 @@ if (hasGetUserMedia()) {
 function enableCam(event) {
     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
         video.srcObject = stream;
-        video.addEventListener("loadeddata", predictWebcam);
+        video.addEventListener("loadeddata", predictFace);
     })
     console.log("enableCam")
 }
 let lastVideoTime = -1;
 let results = undefined;
 const drawingUtils = new DrawingUtils(canvasCtx);
-async function predictWebcam() {
+async function predictFace() {
     const radio = video.videoHeight / video.videoWidth;
     video.style.width = videoWidth + "px";
     video.style.height = videoWidth * radio + "px";
@@ -91,6 +91,6 @@ async function predictWebcam() {
     }
     // Call this function again to keep predicting when the browser is ready.
 
-    window.requestAnimationFrame(predictWebcam);
+    window.requestAnimationFrame(predictFace);
 
 }
