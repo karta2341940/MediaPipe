@@ -1,25 +1,37 @@
-const fs = require('fs');
 const WebSocket = require('ws');
+const express = require('express');
+const http = require('http');
+const fs = require('fs');
 const moment = require('moment');
 
-/**@type import('ws').Server */
-const wss = new WebSocket.Server({ port: 3000 });
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
 
-wss.on('listening', () => console.log("Server is listening on port 3000"));
-
+// WebSocket連線
 wss.on('connection', (ws) => {
-    console.log('使用者已連接');
+    console.log('開始連線');
+    
+    ws.on('error', (error) => {
+        console.log(error);
+    });
 
-    const fileStream = fs.createWriteStream(`./VIDEO/output-${moment().format('MMDD-hh-mm')}.mp4`, { flags: 'a' });
-    ws.on('upgrade', data => {
-        console.log('Writing')
-    })
+    // 接收來自客戶端的視訊資料
     ws.on('message', (data) => {
-        fileStream.write(data);
+        // 儲存視訊資料到檔案
+        console.log('收到')
+        fs.appendFile(`./VIDEO/${moment().format('MMDD')}.webm`, data, (err) => {
+            if (err) throw err;
+        });
     });
 
+    // 斷開WebSocket連線
     ws.on('close', () => {
-        console.log('使用者已斷開連接');
-        fileStream.end();
+        console.log('結束連線');
     });
+});
+
+// 啟動伺服器
+server.listen(3000, () => {
+    console.log('Server started on port 3000');
 });

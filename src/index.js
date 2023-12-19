@@ -11,6 +11,7 @@ const drawingUtils = new DrawingUtils(canvasCtx);
 const video = document.querySelector("video");
 const videoHeight = "360px";
 const videoWidth = "480px";
+let cameraId = "";
 let lastVideoTime = -1;
 
 let modelPath = {
@@ -44,12 +45,14 @@ function enableCam(event) {
             }
         })
     });
+
     video.addEventListener("loadeddata", predictBone);
+
 
 }
 
 /**@type import('ws')*/
-let socket;
+let socket = new WebSocket('ws://localhost:3000');;
 
 /**
  * 釋放資源並重置poseLandmarker
@@ -62,38 +65,33 @@ async function release() {
 }
 
 let mediaRecorder;
-let recordedChunks = [];
 
 async function changeVideo(event) {
     let deviceId = event.target.value;
-    await release();
 
+    cameraId = deviceId;
+    
+    await release();
     if (deviceId === "") {
-        socket.close();
+        mediaRecorder.stop();
         return;
-    }
-    socket = new WebSocket('ws://localhost:3000');
+    };
+
+
     let stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: deviceId } });
     video.srcObject = stream;
+
     mediaRecorder = new MediaRecorder(stream);
     mediaRecorder.ondataavailable = handleDataAvailable;
-    mediaRecorder.start(1000);
+    mediaRecorder.start(200);
 }
 function handleDataAvailable(event) {
-    if (event.data.size > 0) {
-        recordedChunks.push(event.data);
-        sendStreamData(event.data);
+    if (event.data && event.data.size > 0) {
+        console.log('send')
+        socket.send(event.data);
     }
 }
-function sendStreamData(data) {
 
-    socket.addEventListener('open', (event) => {
-        socket.send(data);
-    });
-    socket.addEventListener('close', (event) => {
-        console.log('WebSocket 連接已關閉');
-    });
-}
 /**
  * 初始化Pose Land Maker
  */
@@ -118,6 +116,7 @@ async function initPoseLandMaker() {
  * 人體骨架辨識
  */
 async function predictBone() {
+    if (cameraId !== "") return;
     canvas.style.height = videoHeight;
     canvas.style.width = videoWidth;
     video.style.height = videoHeight;
@@ -144,7 +143,7 @@ async function predictBone() {
             canvasCtx.restore();
         })
     }
-
-    window.requestAnimationFrame(predictBone);
-
+    if (cameraId !== "") {
+        window.requestAnimationFrame(predictBone);
+    }
 }
