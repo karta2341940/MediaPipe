@@ -32,7 +32,7 @@ if (hasGetUserMedia()) {
 }
 function enableCam(event) {
     let select = document.querySelector("#video-select");
-    select.innerHTML = ``
+    select.innerHTML = `<option></option>`
 
 
     navigator.mediaDevices.enumerateDevices().then(device => {
@@ -40,7 +40,6 @@ function enableCam(event) {
             if (item.kind === "videoinput") {
                 // type the device id to select
                 select.addEventListener("change", changeVideo);
-                select.addEventListener('click', changeVideo);
                 select.innerHTML += `<option value="${item.deviceId}">${item.label}</option>`
             }
         })
@@ -51,6 +50,10 @@ function enableCam(event) {
 
 async function changeVideo(event) {
     let deviceId = event.target.value;
+    poseLandmarker = null
+    await initPoseLandMaker();
+    video.srcObject = null;
+    canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
     let stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: deviceId } });
     video.srcObject = stream;
 }
@@ -104,7 +107,7 @@ async function predictBone() {
             canvasCtx.restore();
         })
     }
-    if (webcamRunning === true) {
-        window.requestAnimationFrame(predictBone);
-    }
+
+    window.requestAnimationFrame(predictBone);
+
 }

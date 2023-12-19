@@ -50,14 +50,13 @@ if (hasGetUserMedia()) {
 }
 function enableCam(event) {
     let select = document.querySelector("#video-select2");
-    select.innerHTML = ``
+    select.innerHTML = `<option></option>`
 
     navigator.mediaDevices.enumerateDevices().then(device => {
         device.forEach((item, index) => {
             if (item.kind === "videoinput") {
                 // type the device id to select
                 select.addEventListener("change", changeVideo);
-                select.addEventListener('click', changeVideo);
                 select.innerHTML += `<option value="${item.deviceId}">${item.label}</option>`
             }
         })
