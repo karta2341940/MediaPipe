@@ -49,12 +49,8 @@ if (hasGetUserMedia()) {
     enableWebcamButton.addEventListener("click", enableCam);
 }
 function enableCam(event) {
-
-
     let select = document.querySelector("#video-select2");
-
     select.innerHTML = ``
-
 
     navigator.mediaDevices.enumerateDevices().then(device => {
         device.forEach((item, index) => {
@@ -63,26 +59,18 @@ function enableCam(event) {
                 select.addEventListener("change", changeVideo);
                 select.addEventListener('click', changeVideo);
                 select.innerHTML += `<option value="${item.deviceId}">${item.label}</option>`
-                console.log(item.deviceId)
             }
         })
     });
-    console.log("enableCam")
-
+    video2.addEventListener("loadeddata", predictFace);
 
 }
 
-function changeVideo(event) {
+async function changeVideo(event) {
     let deviceId = event.target.value;
-
-    navigator.mediaDevices.getUserMedia({
-        video: {
-            deviceId: deviceId
-        }
-    }).then(stream => {
-        video2.srcObject = stream;
-        video2.addEventListener("loadeddata", predictFace);
-    })
+    let stream = await navigator.mediaDevices.getUserMedia({video:{deviceId:deviceId}});
+    video2.srcObject = stream;
+    console.log("changeVideo2")
 }
 let lastVideoTime = -1;
 let results = undefined;

@@ -12,6 +12,7 @@ const video = document.querySelector("video");
 const videoHeight = "360px";
 const videoWidth = "480px";
 let lastVideoTime = -1;
+
 let modelPath = {
     "lite": "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
     "full": "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/1/pose_landmarker_full.task",
@@ -33,6 +34,7 @@ function enableCam(event) {
     let select = document.querySelector("#video-select");
     select.innerHTML = ``
 
+
     navigator.mediaDevices.enumerateDevices().then(device => {
         device.forEach((item, index) => {
             if (item.kind === "videoinput") {
@@ -40,21 +42,17 @@ function enableCam(event) {
                 select.addEventListener("change", changeVideo);
                 select.addEventListener('click', changeVideo);
                 select.innerHTML += `<option value="${item.deviceId}">${item.label}</option>`
-                console.log(item.deviceId)
-
-
             }
         })
     });
-    console.log("enableCam")
+    video.addEventListener("loadeddata", predictBone);
+
 }
 
-function changeVideo(event) {
+async function changeVideo(event) {
     let deviceId = event.target.value;
-    navigator.mediaDevices.getUserMedia({ video: { deviceId: deviceId } }).then(stream => {
-        video.srcObject = stream;
-        video.addEventListener("loadeddata", predictBone);
-    })
+    let stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: deviceId } });
+    video.srcObject = stream;
 }
 /**
  * 初始化Pose Land Maker
@@ -74,6 +72,8 @@ async function initPoseLandMaker() {
         });
     console.log("Init Pose Land Maker")
 }
+
+
 /**
  * 人體骨架辨識
  */
@@ -84,24 +84,27 @@ async function predictBone() {
     video.style.width = videoWidth;
     if (runningMode === "IMAGE") {
         runningMode = "VIDEO";
-        await poseLandmarker.setOptions({ runningMode: "VIDEO" });
+        await faceLandmarker.setOptions({ runningMode: runningMode });
     }
 
     let startTimeMs = performance.now();
     if (lastVideoTime !== video.currentTime) {
         lastVideoTime = video.currentTime;
+
         poseLandmarker.detectForVideo(video, startTimeMs, (result) => {
             canvasCtx.save();
             canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
             for (const landmark of result.landmarks) {
                 drawingUtils.drawLandmarks(landmark, {
                     radius: (data) => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1),
-                    lineWidth: 1,
+                    "lineWidth": 1
                 });
                 drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
             }
             canvasCtx.restore();
         })
     }
-    window.requestAnimationFrame(predictBone);
+    if (webcamRunning === true) {
+        window.requestAnimationFrame(predictBone);
+    }
 }
