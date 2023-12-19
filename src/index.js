@@ -48,14 +48,51 @@ function enableCam(event) {
 
 }
 
-async function changeVideo(event) {
-    let deviceId = event.target.value;
+/**@type import('ws')*/
+let socket;
+
+/**
+ * 釋放資源並重置poseLandmarker
+ */
+async function release() {
     poseLandmarker = null
     await initPoseLandMaker();
     video.srcObject = null;
     canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+let mediaRecorder;
+let recordedChunks = [];
+
+async function changeVideo(event) {
+    let deviceId = event.target.value;
+    await release();
+
+    if (deviceId === "") {
+        socket.close();
+        return;
+    }
+    socket = new WebSocket('ws://localhost:3000');
     let stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: deviceId } });
     video.srcObject = stream;
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = handleDataAvailable;
+    mediaRecorder.start(1000);
+}
+function handleDataAvailable(event) {
+    if (event.data.size > 0) {
+        recordedChunks.push(event.data);
+        sendStreamData(event.data);
+    }
+}
+function sendStreamData(data) {
+
+    socket.addEventListener('open', (event) => {
+        socket.send(data);
+    });
+    socket.addEventListener('close', (event) => {
+        console.log('WebSocket 連接已關閉');
+    });
 }
 /**
  * 初始化Pose Land Maker
