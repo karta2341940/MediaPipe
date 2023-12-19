@@ -36,7 +36,7 @@ async function createFaceLandmarker() {
 }
 createFaceLandmarker();
 
-const video = document.querySelector(".video2");
+const video2 = document.querySelector(".video2");
 const canvasElement = document.querySelector(".canvas2");
 const canvasCtx = canvasElement.getContext("2d");
 
@@ -49,32 +49,61 @@ if (hasGetUserMedia()) {
     enableWebcamButton.addEventListener("click", enableCam);
 }
 function enableCam(event) {
-    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-        video.srcObject = stream;
-        video.addEventListener("loadeddata", predictFace);
-    })
+
+
+    let select = document.querySelector("#video-select2");
+
+    select.innerHTML = ``
+
+
+    navigator.mediaDevices.enumerateDevices().then(device => {
+        device.forEach((item, index) => {
+            if (item.kind === "videoinput") {
+                // type the device id to select
+                select.addEventListener("change", changeVideo);
+                select.addEventListener('click', changeVideo);
+                select.innerHTML += `<option value="${item.deviceId}">${item.label}</option>`
+                console.log(item.deviceId)
+            }
+        })
+    });
     console.log("enableCam")
+
+
+}
+
+function changeVideo(event) {
+    let deviceId = event.target.value;
+
+    navigator.mediaDevices.getUserMedia({
+        video: {
+            deviceId: deviceId
+        }
+    }).then(stream => {
+        video2.srcObject = stream;
+        video2.addEventListener("loadeddata", predictFace);
+    })
 }
 let lastVideoTime = -1;
 let results = undefined;
 const drawingUtils = new DrawingUtils(canvasCtx);
 async function predictFace() {
-    const radio = video.videoHeight / video.videoWidth;
-    video.style.width = videoWidth + "px";
-    video.style.height = videoWidth * radio + "px";
+    const radio = video2.videoHeight / video2.videoWidth;
+    video2.style.width = videoWidth + "px";
+    video2.style.height = videoWidth * radio + "px";
     canvasElement.style.width = videoWidth + "px";
     canvasElement.style.height = videoWidth * radio + "px";
-    canvasElement.width = video.videoWidth;
-    canvasElement.height = video.videoHeight;
+    canvasElement.width = video2.videoWidth;
+    canvasElement.height = video2.videoHeight;
     // Now let's start detecting the stream.
     if (runningMode === "IMAGE") {
         runningMode = "VIDEO";
         await faceLandmarker.setOptions({ runningMode: runningMode });
     }
     let startTimeMs = performance.now();
-    if (lastVideoTime !== video.currentTime) {
-        lastVideoTime = video.currentTime;
-        results = faceLandmarker.detectForVideo(video, startTimeMs);
+    if (lastVideoTime !== video2.currentTime) {
+        lastVideoTime = video2.currentTime;
+        results = faceLandmarker.detectForVideo(video2, startTimeMs);
     }
     if (results.faceLandmarks) {
         for (const landmarks of results.faceLandmarks) {

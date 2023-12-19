@@ -30,11 +30,31 @@ if (hasGetUserMedia()) {
     enableWebcamButton.addEventListener("click", enableCam);
 }
 function enableCam(event) {
-    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+    let select = document.querySelector("#video-select");
+    select.innerHTML = ``
+
+    navigator.mediaDevices.enumerateDevices().then(device => {
+        device.forEach((item, index) => {
+            if (item.kind === "videoinput") {
+                // type the device id to select
+                select.addEventListener("change", changeVideo);
+                select.addEventListener('click', changeVideo);
+                select.innerHTML += `<option value="${item.deviceId}">${item.label}</option>`
+                console.log(item.deviceId)
+
+
+            }
+        })
+    });
+    console.log("enableCam")
+}
+
+function changeVideo(event) {
+    let deviceId = event.target.value;
+    navigator.mediaDevices.getUserMedia({ video: { deviceId: deviceId } }).then(stream => {
         video.srcObject = stream;
         video.addEventListener("loadeddata", predictBone);
     })
-    console.log("enableCam")
 }
 /**
  * 初始化Pose Land Maker
@@ -66,7 +86,7 @@ async function predictBone() {
         runningMode = "VIDEO";
         await poseLandmarker.setOptions({ runningMode: "VIDEO" });
     }
-    
+
     let startTimeMs = performance.now();
     if (lastVideoTime !== video.currentTime) {
         lastVideoTime = video.currentTime;
@@ -85,5 +105,3 @@ async function predictBone() {
     }
     window.requestAnimationFrame(predictBone);
 }
-
-
