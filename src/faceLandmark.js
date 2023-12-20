@@ -62,7 +62,6 @@ function enableCam(event) {
         })
     });
     video2.addEventListener("loadeddata", predictFace);
-
 }
 
 async function changeVideo(event) {

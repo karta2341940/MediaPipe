@@ -52,7 +52,6 @@ function enableCam(event) {
 
     video.addEventListener("loadeddata", predictBone);
 
-
 }
 
 
@@ -104,7 +103,7 @@ function handleDataAvailable(event) {
  */
 async function initPoseLandMaker() {
     try {
-        socket = new WebSocket('ws://localhost:3000');
+        socket 
         isConnect = true;
     }
     catch (err) {
