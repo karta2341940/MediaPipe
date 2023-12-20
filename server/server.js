@@ -3,7 +3,6 @@ const express = require('express');
 const http = require('http');
 const fs = require('fs');
 const moment = require('moment');
-
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
@@ -20,6 +19,7 @@ wss.on('connection', (ws) => {
     ws.on('message', (data) => {
         // 儲存視訊資料到檔案
         console.log('收到')
+        // fs.existsSync('./VIDEO') || fs.mkdirSync('./VIDEO');
         fs.appendFile(`./VIDEO/${moment().format('MMDD')}.webm`, data, (err) => {
             if (err) throw err;
         });
