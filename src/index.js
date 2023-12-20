@@ -13,6 +13,10 @@ const videoHeight = "360px";
 const videoWidth = "480px";
 let cameraId = "";
 let lastVideoTime = -1;
+let isConnect = false;
+/**@type import('ws')*/
+let socket
+let mediaRecorder;
 
 let modelPath = {
     "lite": "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
@@ -51,8 +55,7 @@ function enableCam(event) {
 
 }
 
-/**@type import('ws')*/
-let socket = new WebSocket('ws://localhost:3000');;
+
 
 /**
  * 釋放資源並重置poseLandmarker
@@ -64,31 +67,35 @@ async function release() {
     canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-let mediaRecorder;
 
 async function changeVideo(event) {
     let deviceId = event.target.value;
 
     cameraId = deviceId;
-    
+
     await release();
     if (deviceId === "") {
-        mediaRecorder.stop();
+        if (isConnect)
+            mediaRecorder.stop();
         return;
     };
-
 
     let stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: deviceId } });
     video.srcObject = stream;
 
-    mediaRecorder = new MediaRecorder(stream);
-    mediaRecorder.ondataavailable = handleDataAvailable;
-    mediaRecorder.start(200);
+    if (isConnect) {
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = handleDataAvailable;
+        mediaRecorder.start(200);
+    }
 }
 function handleDataAvailable(event) {
+    if (!isConnect) return;
     if (event.data && event.data.size > 0) {
+
         console.log('send')
         socket.send(event.data);
+
     }
 }
 
@@ -96,6 +103,13 @@ function handleDataAvailable(event) {
  * 初始化Pose Land Maker
  */
 async function initPoseLandMaker() {
+    try {
+        socket = new WebSocket('ws://localhost:3000');
+        isConnect = true;
+    }
+    catch (err) {
+        console.log("No connection");
+    }
 
     const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm");
     poseLandmarker = await PoseLandmarker.createFromOptions(
@@ -116,7 +130,7 @@ async function initPoseLandMaker() {
  * 人體骨架辨識
  */
 async function predictBone() {
-    if (cameraId !== "") return;
+    if (cameraId === "") return;
     canvas.style.height = videoHeight;
     canvas.style.width = videoWidth;
     video.style.height = videoHeight;
