@@ -586,6 +586,7 @@ const drawingUtils = new (0, _tasksVision.DrawingUtils)(canvasCtx);
 const video = document.querySelector("video");
 const videoHeight = "360px";
 const videoWidth = "480px";
+let cameraId = "";
 let lastVideoTime = -1;
 let modelPath = {
     "lite": "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
@@ -615,18 +616,39 @@ function enableCam(event) {
     });
     video.addEventListener("loadeddata", predictBone);
 }
-async function changeVideo(event) {
-    let deviceId = event.target.value;
+/**@type import('ws')*/ let socket = new WebSocket("ws://localhost:3000");
+/**
+ * 釋放資源並重置poseLandmarker
+ */ async function release() {
     poseLandmarker = null;
     await initPoseLandMaker();
     video.srcObject = null;
     canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+}
+let mediaRecorder;
+async function changeVideo(event) {
+    let deviceId = event.target.value;
+    cameraId = deviceId;
+    await release();
+    if (deviceId === "") {
+        mediaRecorder.stop();
+        return;
+    }
     let stream = await navigator.mediaDevices.getUserMedia({
         video: {
             deviceId: deviceId
         }
     });
     video.srcObject = stream;
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = handleDataAvailable;
+    mediaRecorder.start(200);
+}
+function handleDataAvailable(event) {
+    if (event.data && event.data.size > 0) {
+        console.log("send");
+        socket.send(event.data);
+    }
 }
 /**
  * 初始化Pose Land Maker
@@ -645,6 +667,7 @@ async function changeVideo(event) {
 /**
  * 人體骨架辨識
  */ async function predictBone() {
+    if (cameraId !== "") return;
     canvas.style.height = videoHeight;
     canvas.style.width = videoWidth;
     video.style.height = videoHeight;
@@ -671,7 +694,7 @@ async function changeVideo(event) {
             canvasCtx.restore();
         });
     }
-    window.requestAnimationFrame(predictBone);
+    if (cameraId !== "") window.requestAnimationFrame(predictBone);
 }
 
 },{"@mediapipe/tasks-vision":"gYujv"}],"gYujv":[function(require,module,exports) {
